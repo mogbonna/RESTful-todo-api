@@ -1,52 +1,63 @@
 # Todo API
 
-A RESTful API for managing todo items built with Node.js, Express, and MongoDB.
+RESTful API for managing todo lists with user authentication, categories, and search functionality.
+
+## Features
+
+- User authentication with JWT
+- Todo CRUD operations
+- Category management
+- Advanced todo filtering and search
+- Priority levels and due dates
 
 ## Setup
 
+1. Clone repository
+2. Install dependencies:
+
 ```bash
-# Install dependencies
 npm install
+```
 
-# Configure environment variables
-cp .env.example .env
-# Edit MONGODB_URI and PORT in .env
+3. Configure environment variables in `.env`:
 
-# Run development server
+```
+PORT=3000
+MONGODB_URI=mongodb://localhost:27017/todo-app
+JWT_SECRET=your_jwt_secret_key
+JWT_EXPIRE=30d
+```
+
+4. Start server:
+
+```bash
 npm run dev
-
-# Run production server
-npm start
 ```
 
 ## API Endpoints
 
-```
-GET    /api/todos     - Get all todos
-POST   /api/todos     - Create todo
-GET    /api/todos/:id - Get single todo
-PUT    /api/todos/:id - Update todo
-DELETE /api/todos/:id - Delete todo
-```
+### Auth
 
-## Todo Schema
+- `POST /api/v1/auth/register` - Register user
+- `POST /api/v1/auth/login` - Login user
 
-```javascript
-{
-  title: String,       // required
-  description: String, // optional
-  completed: Boolean,  // default: false
-  createdAt: Date     // default: now
-}
-```
+### Todos
 
-## Tech Stack
+- `GET /api/v1/todos` - Get all todos (supports filters: search, category, priority, completed, dueDate)
+- `POST /api/v1/todos` - Create todo
+- `GET /api/v1/todos/:id` - Get specific todo
+- `PUT /api/v1/todos/:id` - Update todo
+- `DELETE /api/v1/todos/:id` - Delete todo
 
-- Node.js/Express
+### Categories
+
+- `GET /api/v1/categories` - Get all categories
+- `POST /api/v1/categories` - Create category
+
+## Dependencies
+
+- Express.js
 - MongoDB/Mongoose
+- JWT for authentication
+- Express Validator
 - CORS enabled
-- Environment variables
-
-## License
-
-ISC
