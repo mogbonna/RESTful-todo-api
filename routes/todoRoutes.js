@@ -14,7 +14,7 @@ router.route("/").get(protect, getAllTodos).post(protect, createTodo);
 router
   .route("/:id")
   .get(protect, getTodo)
-  .put(protect, updateTodo)
+  .patch(protect, updateTodo)
   .delete(protect, deleteTodo);
 
 module.exports = router;
