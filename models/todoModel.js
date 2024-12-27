@@ -1,32 +1,44 @@
 const mongoose = require("mongoose");
 
-const todoSchema = new mongoose.Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-      trim: true,
-    },
-    description: {
-      type: String,
-      trim: true,
-    },
-    completed: {
-      type: Boolean,
-      default: false,
-    },
+const todoSchema = new mongoose.Schema({
+  title: {
+    type: String,
+    required: [true, "please a title for the todo"],
+    trim: true,
   },
-  {
-    timestamps: true,
-  }
-);
+  description: {
+    type: String,
+    trim: true,
+  },
+  completed: {
+    type: Boolean,
+    default: false,
+  },
+  dueDate: {
+    type: Date,
+  },
+  priority: {
+    type: String,
+    enum: ["low", "medium", "high"],
+    default: "medium",
+  },
+  category: {
+    type: mongoose.Schema.ObjectId,
+    ref: "Category",
+  },
+  user: {
+    type: mongoose.Schema.ObjectId,
+    ref: "User",
+    required: true,
+  },
+  createdAt: {
+    type: Date,
+    default: Date.now,
+  },
+});
 
-// todoSchema.set("toJSON", {
-//   transform: (doc, ret) => {
-//     delete ret.__v;
-//     return ret;
-//   },
-// });
+// Add text index for search functionality
+todoSchema.index({ title: "text", description: "text" });
 
 todoSchema.pre(/^find/, function (next) {
   this.select("-__v");

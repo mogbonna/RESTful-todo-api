@@ -2,7 +2,35 @@ const Todo = require("../models/todoModel");
 
 exports.getAllTodos = async (req, res) => {
   try {
-    const todos = await Todo.find().sort({ createdAt: -1 });
+    const queryObj = { user: req.user.id };
+
+    // Search functionality
+    if (req.query.search) {
+      queryObj.$text = { $search: req.query.search };
+    }
+
+    // Filter by category
+    if (req.query.category) {
+      queryObj.category = req.query.category;
+    }
+
+    // Filter by priority
+    if (req.query.priority) {
+      queryObj.priority = req.query.priority;
+    }
+
+    // Filter by completion status
+    if (req.query.completed) {
+      queryObj.completed = req.query.completed === "true";
+    }
+
+    // Filter by due date
+    if (req.query.dueDate) {
+      queryObj.dueDate = { $lte: new Date(req.query.dueDate) };
+    }
+    const todos = await Todo.find(queryObj)
+      .populate("category", "name")
+      .sort({ dueDate: 1, priority: -1, createdAt: -1 });
 
     if (!todos.length) {
       return res.status(404).json({
@@ -23,8 +51,9 @@ exports.getAllTodos = async (req, res) => {
     });
   }
 };
-exports.getTodoById = async (req, res) => {
+exports.getTodo = async (req, res) => {
   try {
+    req.body.user = req.user.id;
     const todo = awaitTodo.findById(req.params.id);
     if (!todo) {
       return res.status(404).json({ success: false, error: "Todo Not Found!" });
@@ -42,6 +71,7 @@ exports.getTodoById = async (req, res) => {
 };
 exports.createTodo = async (req, res) => {
   try {
+    req.body.user = req.user.id;
     const todo = await Todo.create(req.body);
     res.status(201).json({
       status: "success",
@@ -63,6 +93,7 @@ exports.createTodo = async (req, res) => {
 };
 exports.updateTodo = async (req, res) => {
   try {
+    req.body.user = req.user.id;
     const todo = Todo.findByIdAndUpdate(req.params.id, req.body, {
       new: true,
       runValidators: true,
@@ -83,6 +114,7 @@ exports.updateTodo = async (req, res) => {
 };
 exports.deleteTodo = async (req, res) => {
   try {
+    req.body.user = req.user.id;
     const deleted = await Todo.findByIdAndDelete(req.params.id, req.body);
     if (!deleted) {
       return res.status(404).json({ success: false, error: "Todo Not Found!" });
